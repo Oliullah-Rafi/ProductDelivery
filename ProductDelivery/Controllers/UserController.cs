@@ -179,7 +179,19 @@ namespace ProductDelivery.Controllers
             return RedirectToAction("Login");
         }
 
+        public ActionResult Details(int id)
+        {
+            var db = new ProductDatabaseEntities();
+            var dept = db.Users.Find(id);
+
+            return View(dept);
+
+        }
+
 
     }
 
 }
+
+
+

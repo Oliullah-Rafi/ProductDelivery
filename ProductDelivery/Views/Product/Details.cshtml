@@ -57,25 +57,74 @@
 
 </body>
 </html>
-@*
-<h2>Products</h2>
-<table class="table table-bordered">
-    <tr>
-        <th>ProId</th>
-        <th>ProName</th>
-        <th>ProPrice</th>
-        <th>CateId</th>
 
-    </tr>
-    @foreach (var p in Model.Products)
-    {
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Add some basic styling to the table */
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            table th, table td {
+                border: 1px solid #dddddd;
+                text-align: left;
+                padding: 8px;
+            }
+
+            table th {
+                background-color: #f2f2f2;
+            }
+
+            /* Add hover effect on table rows */
+            table tr:hover {
+                background-color: #f5f5f5;
+            }
+
+            /* Style the table header cells */
+            table th {
+                background-color: #333;
+                color: #fff;
+            }
+
+            /* Add padding to the header cells */
+            table th, table td {
+                padding: 15px;
+            }
+
+            /* Style alternating rows with different background colors */
+            table tr:nth-child(even) {
+                background-color: #f2f2f2;
+            }
+    </style>
+</head>
+<body>
+    <h2>Order Details List :</h2>
+
+    <table>
         <tr>
-            <td>@p.Id</td>
-            <td>@p.Name</td>
-            <td>@p.ProPrice</td>
-            <td>@p.CateId</td>
-
+            <th>Order Details ID</th>
+            <th>Order ID</th>
+            <th>Product ID</th>
+            <th>Price</th>
+            <th>Quantity</th>
         </tr>
+        @foreach (var OD in Model.OrderDetails)
+        {
+            <tr>
+                <td>@OD.Id</td>
+                <td>@OD.OrderID</td>
+                <td>@OD.ProductId</td>
+                <td>@OD.Price</td>
+                <td>@OD.Quantity</td>
+            </tr>
+        }
+    </table>
+</body>
+</html>
 
-    }
-</table>*@
+
+

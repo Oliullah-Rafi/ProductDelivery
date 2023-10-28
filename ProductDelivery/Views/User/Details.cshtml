@@ -1,4 +1,4 @@
-﻿@model ProductDelivery.EF.Category
+﻿@model ProductDelivery.EF.User
 
 @{
     ViewBag.Title = "Details";
@@ -7,15 +7,31 @@
 <h2>Details</h2>
 
 <div>
-    <h4>Category</h4>
+    <h4>User</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Username)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Username)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Password)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Password)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Type)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Type)
         </dd>
 
     </dl>
@@ -68,27 +84,28 @@
     </style>
 </head>
 <body>
-    <h2>Products</h2>
+    <h2>Order List :</h2>
 
     <table>
         <tr>
-            <th>Product Id</th>
-            <th>Product Name</th>
-            <th>Product Price</th>
-            <th>Product Quantity</th>
-            <th>Category Id</th>
+            <th>Order ID</th>
+            <th>Order Status</th>
+            <th>Order Date</th>
+            <th>Customer ID</th>
+          
         </tr>
-        @foreach (var p in Model.Products)
+        @foreach (var O in Model.Orders)
         {
             <tr>
-                <td>@p.Id</td>
-                <td>@p.Name</td>
-                <td>@p.Price</td>
-                <td>@p.Quantity</td>
-                <td>@p.CategoryId</td>
+                <td>@O.Id</td>
+                <td>@O.Status</td>
+                <td>@O.Date</td>
+                <td>@O.CustomerId</td>
+               
             </tr>
         }
     </table>
 </body>
 </html>
+
 
