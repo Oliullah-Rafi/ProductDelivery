@@ -124,6 +124,7 @@ namespace ProductDelivery.Controllers
                     return RedirectToAction("Login");
 
                 }*/
+
         [HttpGet]
         public ActionResult SignUp()
         {
