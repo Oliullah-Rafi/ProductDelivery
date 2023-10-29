@@ -1,4 +1,6 @@
-﻿using ProductDelivery.EF;
+﻿using AutoMapper;
+using ProductDelivery.DTOS;
+using ProductDelivery.EF;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -131,38 +133,52 @@ namespace ProductDelivery.Controllers
             return View();
         }
 
-        [HttpPost]
-        public ActionResult SignUp(User user)
-        {
-            try
-            {
-                var db = new ProductDatabaseEntities();
-                db.Users.Add(user);
-                db.SaveChanges();
-                return RedirectToAction("Login");
-            }
-            catch (Exception ex)
-            {
-                // Handle the exception, e.g., log it or show an error message to the user
-                ViewBag.ErrorMessage = "An error occurred during sign-up: " + ex.Message;
-                return View(user);
-            }
-        }
-   /*         public ActionResult Welcome()
-        { 
 
-            int? userId = Session["UserId"] as int?;
-            if (userId != null)
+        [HttpPost]
+        public ActionResult SignUp(UserDTO user)
+        {
+            if (ModelState.IsValid)
             {
-                // User is logged in; you can use the userId to fetch user-specific data
-                return View();
+                var config = new MapperConfiguration(cfg => {
+                    cfg.CreateMap<UserDTO, User>();
+                });
+
+                var mapper = new Mapper(config);
+                var data = mapper.Map<User>(user);
+
+                try
+                {
+                    var db = new ProductDatabaseEntities();
+                    db.Users.Add(data);
+                    db.SaveChanges();
+                    return RedirectToAction("Login");
+                }
+                catch (Exception ex)
+                {
+                    // Handle the exception, e.g., log it or show an error message to the user
+                    ViewBag.ErrorMessage = "An error occurred during sign-up: " + ex.Message;
+                    return View(user);
+                }
             }
-            else
-            {
-                // Handle the case where the user is not authenticated
-                return RedirectToAction("Login");
-            }
-        }*/
+
+            return View(user);
+        }
+
+        /*         public ActionResult Welcome()
+             { 
+
+                 int? userId = Session["UserId"] as int?;
+                 if (userId != null)
+                 {
+                     // User is logged in; you can use the userId to fetch user-specific data
+                     return View();
+                 }
+                 else
+                 {
+                     // Handle the case where the user is not authenticated
+                     return RedirectToAction("Login");
+                 }
+             }*/
 
 
         [HttpPost]
@@ -183,11 +199,28 @@ namespace ProductDelivery.Controllers
         public ActionResult Details(int id)
         {
             var db = new ProductDatabaseEntities();
-            var dept = db.Users.Find(id);
+            var user = db.Users.Find(id);
 
-            return View(dept);
+            if (user != null)
+            {
+                // Configure AutoMapper to map from User to UserDTO
+                var config = new MapperConfiguration(cfg =>
+                {
+                    cfg.CreateMap<User, UserDTO>();
+                });
 
+                var mapper = new Mapper(config);
+
+                // Map the User entity to a UserDTO
+                var userDTO = mapper.Map<UserDTO>(user);
+
+                return View(userDTO);
+            }
+
+            
+            return View("User");
         }
+
 
 
     }
