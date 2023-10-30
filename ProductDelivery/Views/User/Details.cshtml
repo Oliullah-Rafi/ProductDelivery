@@ -84,7 +84,7 @@
     </style>
 </head>
 <body>
-    <h2>Order List :</h2>
+    <h2>Order List:</h2>
 
     <table>
         <tr>
@@ -92,7 +92,6 @@
             <th>Order Status</th>
             <th>Order Date</th>
             <th>Customer ID</th>
-          
         </tr>
         @foreach (var O in Model.Orders)
         {
@@ -101,11 +100,6 @@
                 <td>@O.Status</td>
                 <td>@O.Date</td>
                 <td>@O.CustomerId</td>
-               
             </tr>
         }
     </table>
-</body>
-</html>
-
-

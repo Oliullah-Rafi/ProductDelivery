@@ -65,34 +65,64 @@ namespace ProductDelivery.Controllers
             return View(data);
 
         }
+        /*  [HttpPost]
+          public ActionResult Edit(ProductDTO p)
+          {
+              if (ModelState.IsValid)
+              {
+                  var db = new ProductDatabaseEntities();
+                  var ex = db.Products.Find(p.Id);
+
+                  if (ex != null)
+                  {
+                      // Configure AutoMapper to map from ProductDTO to Product
+                      var config = new MapperConfiguration(cfg =>
+                      {
+                          cfg.CreateMap<ProductDTO, Product>();
+                      });
+
+                      var mapper = new Mapper(config);
+
+                      // Map the updated data from ProductDTO (p) to the existing Product entity (ex)
+                      ex = mapper.Map(p, ex);
+
+                      db.SaveChanges();
+                  }
+
+                  return RedirectToAction("Product");
+              }
+
+              return View(p);
+          }*/
+        /* [HttpPost]
+         public ActionResult Edit(Product p)
+         {
+             var db = new ProductDatabaseEntities();
+             var ex = db.Products.Find(p.Id);
+             ex.Id = p.Id;
+             db.SaveChanges();
+             return RedirectToAction("Product");
+
+         }*/
+
         [HttpPost]
-        public ActionResult Edit(ProductDTO p)
+        public ActionResult Edit(Product p)
         {
-            if (ModelState.IsValid)
+            var db = new ProductDatabaseEntities();
+            var ex = db.Products.Find(p.Id);
+
+            if (ex != null)
             {
-                var db = new ProductDatabaseEntities();
-                var ex = db.Products.Find(p.Id);
+                // Update the properties of the existing product entity with the values from the edited product
+                ex.Name = p.Name;
+                ex.Price = p.Price;
+                ex.Quantity = p.Quantity;
+                ex.CategoryId = p.CategoryId;
 
-                if (ex != null)
-                {
-                    // Configure AutoMapper to map from ProductDTO to Product
-                    var config = new MapperConfiguration(cfg =>
-                    {
-                        cfg.CreateMap<ProductDTO, Product>();
-                    });
-
-                    var mapper = new Mapper(config);
-
-                    // Map the updated data from ProductDTO (p) to the existing Product entity (ex)
-                    ex = mapper.Map(p, ex);
-
-                    db.SaveChanges();
-                }
-
-                return RedirectToAction("Product");
+                db.SaveChanges();
             }
 
-            return View(p);
+            return RedirectToAction("Product");
         }
 
         public ActionResult Details(int id)

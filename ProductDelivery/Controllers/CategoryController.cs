@@ -67,34 +67,53 @@ namespace ProductDelivery.Controllers
 
         }
         [HttpPost]
-        public ActionResult Edit(CategoryDTO cg)
+        public ActionResult Edit(Category cg)
         {
-            if (ModelState.IsValid)
+            var db = new ProductDatabaseEntities();
+            var ex = db.Categories.Find(cg.Id);
+
+            if (ex != null)
             {
-                var db = new ProductDatabaseEntities();
-                var ex = db.Categories.Find(cg.Id);
+                // Update the properties of the existing product entity with the values from the edited product
+                ex.Id = cg.Id;
+                ex.Name = cg.Name;
+            
+         
 
-                if (ex != null)
-                {
-                    // Configure AutoMapper to map from CategoryDTO to Category
-                    var config = new MapperConfiguration(cfg =>
-                    {
-                        cfg.CreateMap<CategoryDTO, Category>();
-                    });
-
-                    var mapper = new Mapper(config);
-
-                    // Map the updated data from CategoryDTO (cg) to the existing Category entity (ex)
-                    ex = mapper.Map(cg, ex);
-
-                    db.SaveChanges();
-                }
-
-                return RedirectToAction("Category");
+                db.SaveChanges();
             }
 
-            return View(cg);
+            return RedirectToAction("Category");
         }
+        /* [HttpPost]
+         public ActionResult Edit(CategoryDTO cg)
+         {
+             if (ModelState.IsValid)
+             {
+                 var db = new ProductDatabaseEntities();
+                 var ex = db.Categories.Find(cg.Id);
+
+                 if (ex != null)
+                 {
+                     // Configure AutoMapper to map from CategoryDTO to Category
+                     var config = new MapperConfiguration(cfg =>
+                     {
+                         cfg.CreateMap<CategoryDTO, Category>();
+                     });
+
+                     var mapper = new Mapper(config);
+
+                     // Map the updated data from CategoryDTO (cg) to the existing Category entity (ex)
+                     ex = mapper.Map(cg, ex);
+
+                     db.SaveChanges();
+                 }
+
+                 return RedirectToAction("Category");
+             }
+
+             return View(cg);
+         }*/
 
         public ActionResult Details(int id)
         {

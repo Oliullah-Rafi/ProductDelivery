@@ -66,38 +66,65 @@ namespace ProductDelivery.Controllers
 
         }
         [HttpPost]
-        public ActionResult Edit(OrderDTO o)
+        public ActionResult Edit(Order ord)
         {
-            if (ModelState.IsValid)
+            var db = new ProductDatabaseEntities();
+            var ex = db.Orders.Find(ord.Id);
+
+            if (ex != null)
             {
-                var db = new ProductDatabaseEntities();
-                var ex = db.Orders.Find(o.Id);
+                // Update the properties of the existing product entity with the values from the edited product
+                ex.Id = ord.Id;
+                ex.Status = ord.Status;
+                ex.Date = ord.Date;
+                ex.CustomerId = ord.CustomerId;
+               
 
-                if (ex != null)
-                {
-                    // Configure AutoMapper to map from OrderDTO to Order
-                    var config = new MapperConfiguration(cfg =>
-                    {
-                        cfg.CreateMap<OrderDTO, Order>();
-                    });
-
-                    var mapper = new Mapper(config);
-
-                    // Map the updated data from OrderDTO (o) to the existing Order entity (ex)
-                    ex = mapper.Map(o, ex);
-
-                    db.SaveChanges();
-                }
-
-                return RedirectToAction("Order");
+                db.SaveChanges();
             }
 
-            return View(o);
+            return RedirectToAction("Order");
         }
+        /*        [HttpPost]
+                public ActionResult Edit(OrderDTO o)
+                {
+                    if (ModelState.IsValid)
+                    {
+                        var db = new ProductDatabaseEntities();
+                        var ex = db.Orders.Find(o.Id);
 
- 
+                        if (ex != null)
+                        {
+                            // Configure AutoMapper to map from OrderDTO to Order
+                            var config = new MapperConfiguration(cfg =>
+                            {
+                                cfg.CreateMap<OrderDTO, Order>();
+                            });
+
+                            var mapper = new Mapper(config);
+
+                            // Map the updated data from OrderDTO (o) to the existing Order entity (ex)
+                            ex = mapper.Map(o, ex);
+
+                            db.SaveChanges();
+                        }
+
+                        return RedirectToAction("Order");
+                    }
+
+                    return View(o);
+                }*/
 
         public ActionResult Details(int id)
+        {
+            var db = new ProductDatabaseEntities();
+            var Order = db.Orders.Find(id);
+
+            return View(Order);
+
+        }
+
+       /* public ActionResult Details(int id)
         {
             var db = new ProductDatabaseEntities();
             var order = db.Orders.Find(id);
@@ -120,6 +147,6 @@ namespace ProductDelivery.Controllers
 
             return RedirectToAction("Order"); // Redirect to the Order view if the order is not found
         }
-
+*/
     }
 }

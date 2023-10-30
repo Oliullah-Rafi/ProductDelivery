@@ -15,7 +15,7 @@ namespace ProductDelivery.Views.Category
             var db = new ProductDatabaseEntities();
             var data = db.OrderDetails.ToList();
             return View(data);
-         
+
         }
         public ActionResult Create()
         {
@@ -50,16 +50,36 @@ namespace ProductDelivery.Views.Category
 
         }
         [HttpPost]
-        public ActionResult Edit(OrderDetail od)
+        public ActionResult Edit(OrderDetail ordd)
         {
             var db = new ProductDatabaseEntities();
-            var ex = db.OrderDetails.Find(od.Id);
-            ex.Id = od.Id;
-            db.SaveChanges();
+            var ex = db.OrderDetails.Find(ordd.Id);
+
+            if (ex != null)
+            {
+                // Update the properties of the existing product entity with the values from the edited product
+                ex.Id = ordd.Id;
+                ex.OrderID = ordd.OrderID;
+                ex.ProductId = ordd.ProductId;
+                ex.Price = ordd.Price;
+                ex.Quantity = ordd.Quantity;
+
+                db.SaveChanges();
+            }
+
             return RedirectToAction("OrderDetail");
-
-
         }
+        /*      [HttpPost]
+              public ActionResult Edit(OrderDetail od)
+              {
+                  var db = new ProductDatabaseEntities();
+                  var ex = db.OrderDetails.Find(od.Id);
+                  ex.Id = od.Id;
+                  db.SaveChanges();
+                  return RedirectToAction("OrderDetail");
+
+
+              }*/
         public ActionResult Details(int id)
         {
             var db = new ProductDatabaseEntities();

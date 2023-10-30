@@ -81,3 +81,5 @@ C:\Asp.net\ProductDelivery\ProductDelivery\obj\Debug\ProductDelivery.csproj.Core
 C:\Asp.net\ProductDelivery\ProductDelivery\obj\Debug\ProductDelivery.csproj.CopyComplete
 C:\Asp.net\ProductDelivery\ProductDelivery\obj\Debug\ProductDelivery.dll
 C:\Asp.net\ProductDelivery\ProductDelivery\obj\Debug\ProductDelivery.pdb
+C:\Asp.net\ProductDelivery\ProductDelivery\bin\AutoMapper.dll
+C:\Asp.net\ProductDelivery\ProductDelivery\bin\AutoMapper.xml

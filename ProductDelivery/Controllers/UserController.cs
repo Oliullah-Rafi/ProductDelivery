@@ -195,30 +195,66 @@ namespace ProductDelivery.Controllers
 
             return RedirectToAction("Login");
         }
+        /*
+                public ActionResult Details(int id)
+                {
+                    var db = new ProductDatabaseEntities();
+                    var user = db.Users.Find(id);
 
+                    if (user != null)
+                    {
+                        // Configure AutoMapper to map from User to UserDTO
+                        var config = new MapperConfiguration(cfg =>
+                        {
+                            cfg.CreateMap<User, UserDTO>();
+                        });
+
+                        var mapper = new Mapper(config);
+
+                        // Map the User entity to a UserDTO
+                        var userDTO = mapper.Map<UserDTO>(user);
+
+                        return View(userDTO);
+                    }
+
+
+                    return View("User");
+                }*/
+        [HttpGet]
+        public ActionResult Edit(int Id)
+        {
+            var db = new ProductDatabaseEntities();
+            var data = db.Users.Find(Id);
+            return View(data);
+
+        }
+        [HttpPost]
+        public ActionResult Edit(User u)
+        {
+            var db = new ProductDatabaseEntities();
+            var ex = db.Users.Find(u.Id);
+
+            if (ex != null)
+            {
+                // Update the properties of the existing product entity with the values from the edited product
+                ex.Id = u.Id;
+                ex.Username = u.Username;
+                ex.Password = u.Password;
+                ex.Type = u.Type;
+              
+
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("User");
+        }
         public ActionResult Details(int id)
         {
             var db = new ProductDatabaseEntities();
-            var user = db.Users.Find(id);
+            var user1 = db.Users.Find(id);
 
-            if (user != null)
-            {
-                // Configure AutoMapper to map from User to UserDTO
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.CreateMap<User, UserDTO>();
-                });
+            return View(User);
 
-                var mapper = new Mapper(config);
-
-                // Map the User entity to a UserDTO
-                var userDTO = mapper.Map<UserDTO>(user);
-
-                return View(userDTO);
-            }
-
-            
-            return View("User");
         }
 
 
