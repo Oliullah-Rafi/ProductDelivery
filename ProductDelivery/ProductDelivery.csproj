@@ -131,6 +131,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\CategoryController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\OrderController.cs" />
@@ -146,6 +147,7 @@
     <Compile Include="DTOS\ProductDTO.cs" />
     <Compile Include="DTOS\ProductOrderDetailsDTO.cs" />
     <Compile Include="DTOS\UserDTO.cs" />
+    <Compile Include="EF\CartItem.cs" />
     <Compile Include="EF\Category.cs">
       <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
@@ -260,6 +262,12 @@
     <Content Include="Views\OrderDetail\Edit.cshtml" />
     <Content Include="Views\Order\Edit.cshtml" />
     <Content Include="Views\User\Edit.cshtml" />
+    <Content Include="Views\User\Deshboard.cshtml" />
+    <Content Include="Views\Admin\Admin.cshtml" />
+    <Content Include="Views\User\firstPage.cshtml" />
+    <Content Include="Views\User\ViewCart.cshtml" />
+    <Content Include="Views\User\OrderHistory.cshtml" />
+    <Content Include="Views\User\ThankYouForOrder.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -25,7 +25,7 @@ namespace ProductDelivery.Controllers
                 var db = new ProductDatabaseEntities();
                 var existingUser = db.Users.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
 
-                if (existingUser != null)
+                if (existingUser != null && user.Password == existingUser.Password && existingUser.Type == "Customer")
                 {
                     // Authentication successful
                     Session["UserId"] = existingUser.Id; // Store user ID in session
@@ -37,12 +37,28 @@ namespace ProductDelivery.Controllers
                     Response.Cookies.Add(userCookie);
 
                     /*  return RedirectToAction("Order");*/
-                    return RedirectToAction("Order", "Order");
+                    return RedirectToAction("firstPage", "User");
+                }
+
+
+              else  if (existingUser != null && user.Password == existingUser.Password && existingUser.Type == "Admin")
+                {
+                    // Authentication successful
+                    Session["UserId"] = existingUser.Id; // Store user ID in session
+
+                    // Set a cookie to remember the user's login
+                    HttpCookie userCookie = new HttpCookie("AdminAuthentication");
+                    userCookie["UserId"] = existingUser.Id.ToString();
+                    userCookie.Expires = DateTime.Now.AddHours(1); // Set the cookie to expire after a certain time
+                    Response.Cookies.Add(userCookie);
+
+                    /*  return RedirectToAction("Order");*/
+                    return RedirectToAction("Admin", "Admin");
                 }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid username or password");
-                    return View(user);
+                    return View();
                 }
             }
             catch (Exception ex)
@@ -53,80 +69,7 @@ namespace ProductDelivery.Controllers
             }
         }
 
-        //last_ChangedCode
-        /*    // GET: User
-            public ActionResult Login()
-            {
-                return View();
-            }
-
-            *//*       [HttpPost]
-                   public ActionResult Login(User User)
-                   {
-                       return View();
-                       var db = new ProductDatabaseEntities();
-                       var existingUser = db.Users.FirstOrDefault(u => u.Username == User.Username);
-                       return View();
-                   }*//*
-
-            [HttpPost]
-
-            public ActionResult Login(User user)
-            {
-                var db = new ProductDatabaseEntities();
-                var existingUser = db.Users.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
-
-                if (existingUser != null)
-                {
-                    // Authentication successful
-                    // You can set the user's session or cookie here for authentication
-                    //return RedirectToAction("Index", "Home"); // Redirect to the desired page after successful login
-                    return RedirectToAction("Welcome");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid username or password");
-                    return View(user); // Return to the login form with an error message
-
-
-                }
-            }*/
-
-        /*        public ActionResult Login(User user)
-                {
-                    var db = new ProductDatabaseEntities();
-                    var existingUser = db.Users.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
-
-                    if (existingUser != null)
-                    {
-                        // Authentication succeeded, you can implement your logic here.
-                        // For example, you can set a session variable to indicate the user is logged in.
-                        Session["UserId"] = existingUser.Id;
-
-                        return RedirectToAction("Login", "User"); // Redirect to the home page or wherever you want.
-                    }
-                    else
-                    {
-                        ModelState.AddModelError(string.Empty, "Invalid username or password.");
-                        return View();
-                    }
-                }*/
-        /*
-                [HttpGet]
-                public ActionResult SignUp()
-                {
-                    return View();
-                }
-                [HttpPost]
-                public ActionResult SignUp(User u)
-                {
-                    var db = new ProductDatabaseEntities();
-                    db.Users.Add(u);
-                    db.SaveChanges();
-                    return RedirectToAction("Login");
-
-                }*/
-
+   
         [HttpGet]
         public ActionResult SignUp()
         {
@@ -164,25 +107,25 @@ namespace ProductDelivery.Controllers
             return View(user);
         }
 
-        /*         public ActionResult Welcome()
-             { 
+        public ActionResult LogoutAdmin()
+        {
 
-                 int? userId = Session["UserId"] as int?;
-                 if (userId != null)
-                 {
-                     // User is logged in; you can use the userId to fetch user-specific data
-                     return View();
-                 }
-                 else
-                 {
-                     // Handle the case where the user is not authenticated
-                     return RedirectToAction("Login");
-                 }
-             }*/
+            if (Request.Cookies["AdminAuthentication"] != null)
+            {
+                var adminCookie = new HttpCookie("AdminAuthentication");
+                adminCookie.Expires = DateTime.Now.AddYears(-1); // logout
+                Response.Cookies.Add(adminCookie);
+            }
+
+
+            return RedirectToAction("Login");
+        }
+
+ 
 
 
         [HttpPost]
-        public ActionResult Logout()
+        public ActionResult LogoutUser()
         {
             // Clear the session
             Session.Clear();
@@ -193,33 +136,46 @@ namespace ProductDelivery.Controllers
                 Response.Cookies["UserAuthentication"].Expires = DateTime.Now.AddDays(-1);
             }
 
-            return RedirectToAction("Login");
+            return RedirectToAction("User");
         }
-        /*
-                public ActionResult Details(int id)
-                {
-                    var db = new ProductDatabaseEntities();
-                    var user = db.Users.Find(id);
-
-                    if (user != null)
-                    {
-                        // Configure AutoMapper to map from User to UserDTO
-                        var config = new MapperConfiguration(cfg =>
-                        {
-                            cfg.CreateMap<User, UserDTO>();
-                        });
-
-                        var mapper = new Mapper(config);
-
-                        // Map the User entity to a UserDTO
-                        var userDTO = mapper.Map<UserDTO>(user);
-
-                        return View(userDTO);
-                    }
 
 
-                    return View("User");
-                }*/
+        /*   public ActionResult firstPage()
+           {
+
+               int userId = 0;
+               var db = new ProductDatabaseEntities();
+
+               if (Request.Cookies["UserAuthentication"] != null && int.TryParse(Request.Cookies["UserAuthentication"]["UserId"], out userId))
+               {
+                   var userOrders = db.Orders.Where(o => o.CustomerId == userId).ToList();
+                   return View(userOrders);
+               }
+
+
+               return View("Error");
+
+
+           }*/
+
+        public ActionResult firstPage()
+        {
+            int userId = 0;
+            var db = new ProductDatabaseEntities();
+
+            if (Request.Cookies["UserAuthentication"] != null && int.TryParse(Request.Cookies["UserAuthentication"]["UserId"], out userId))
+            {
+                // Retrieve a list of orders for the user with the given user ID
+                var userOrders = db.Orders.Where(o => o.CustomerId == userId).ToList();
+                return View(userOrders); // Pass the list of orders to the view
+            }
+
+            return View("Error");
+        }
+
+
+
+
         [HttpGet]
         public ActionResult Edit(int Id)
         {
@@ -236,7 +192,7 @@ namespace ProductDelivery.Controllers
 
             if (ex != null)
             {
-                // Update the properties of the existing product entity with the values from the edited product
+                
                 ex.Id = u.Id;
                 ex.Username = u.Username;
                 ex.Password = u.Password;
@@ -257,6 +213,189 @@ namespace ProductDelivery.Controllers
 
         }
 
+
+        [HttpGet]
+        public ActionResult Deshboard()
+        {
+            if (Request.Cookies["UserAuthentication"] != null)
+            {
+                string UserUserName = Request.Cookies["UserAuthentication"]["UserUserName"];
+
+                var db = new ProductDatabaseEntities();
+                var data = db.Products.ToList();
+                return View(data);
+
+            }
+
+
+            return RedirectToAction("Index");
+        }
+
+
+        public ActionResult AddToCart(int id, string name, float Price, float Quantity, int CategoryId)
+        {
+            if (Session["ProductBasket"] == null)
+            {
+                Session["ProductBasket"] = new List<CartItem>();
+            }
+
+            List<CartItem> productBasket = (List<CartItem>)Session["ProductBasket"];
+
+
+
+
+            var existingProduct = productBasket.FirstOrDefault(item => item.id == id);
+            // Checking is that same product already in the cart
+            if (existingProduct != null)
+            {
+                // only increses the quantity
+                existingProduct.Quantity += Quantity;
+             
+            }
+            else
+            {
+                // add product in cart
+                productBasket.Add(new CartItem
+                {
+                    id = id,
+                    name = name,
+                    Price = Price,
+                    Quantity = Quantity,
+                    CategoryId = CategoryId,
+                   
+                });
+            }
+
+            Session["ProductBasket"] = productBasket;
+
+            return RedirectToAction("Deshboard");
+
+        }
+
+        [HttpGet]
+        public ActionResult ViewCart()
+        {
+            // Retrieve the shopping cart items from the session
+            List<CartItem> cartItems = Session["ProductBasket"] as List<CartItem>;
+
+            if (cartItems == null || cartItems.Count == 0)
+            {
+                ViewBag.Message = "Your cart is empty.";
+            }
+            else
+            {
+               
+                ViewBag.cartItems = cartItems;
+            }
+
+            return View("ViewCart");
+        }
+
+
+        /*    [HttpGet]
+            public ActionResult ViewCart()
+            {
+
+                // Retrieve the shopping cart items from the session
+                List<CartItem> cartItems = Session["ProductBasket"] as List<CartItem>;
+
+                if (cartItems == null || cartItems.Count == 0)
+                {
+                    ViewBag.Message = "Your cart is empty.";
+                }
+                else
+                {
+                    // store in details in viewbag
+                    ViewBag.ProductIdsInCart = cartItems;
+                }
+
+                return View("ViewCart");
+            }
+    */
+
+
+        [HttpPost]
+        public ActionResult ConfirmOrder()
+        {
+            // Retrieve the product details from the session
+            var productIdsInCart = Session["ProductBasket"] as List<CartItem>;
+
+            if (productIdsInCart != null)
+            {
+                // Get uer id from cookie
+                int UserId;
+                if (Request.Cookies["UserAuthentication"] != null && int.TryParse(Request.Cookies["UserAuthentication"]["UserId"], out UserId))
+                {
+                    using (var db = new ProductDatabaseEntities())
+                    {
+                        using (var transaction = db.Database.BeginTransaction())
+                        {
+                           
+                            try
+                            {
+                                // Create a new order for each checkout
+                                var orderD = new Order
+                                {
+                                    Status = "Ordered",
+                                    CustomerId = UserId,
+                                    Date = DateTime.Now
+                                };
+                                db.Orders.Add(orderD);
+                                db.SaveChanges();
+
+                                // Add products to the order
+                                foreach (var product in productIdsInCart)
+                                {
+                                    var orderM = new OrderDetail
+                                    {                  
+                                       Id= orderD.Id,
+                                        ProductId = product.id,
+                                        Quantity = product.Quantity,
+                                        Price = product.Price * product.Quantity
+                                    };
+                                    db.OrderDetails.Add(orderM);
+                                }
+
+                                db.SaveChanges();
+
+                                // after update both table delete the seassion
+                                Session.Remove("ProductBasket");
+
+                                transaction.Commit(); // all the operations within the transaction have been completed successfully.
+
+
+                                return RedirectToAction("ThankYouForOrder");
+                            }
+                            catch (Exception ex)
+                            {
+                                ViewBag.ErrorMessage = "An error occurred: " + ex.Message;
+                                transaction.Rollback();
+                            }
+                        }
+                    }
+                }
+            }
+
+            return RedirectToAction("Login");
+        }
+
+
+
+
+
+        public ActionResult ThankYouForOrder()
+        {
+            return View();
+        }
+
+        public ActionResult OrderHistory(int userId)
+        {
+            var db = new ProductDatabaseEntities();
+
+            var userOrders = db.Orders.Where(o => o.CustomerId == userId).ToList();
+
+            return View(userOrders);
+        }
 
 
     }

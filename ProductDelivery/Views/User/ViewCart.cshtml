@@ -1,0 +1,46 @@
+﻿@model List<ProductDelivery.EF.Order>
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>Order List:</h2>
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Order name</th>
+            <th>Order Price</th>
+            <th>Order Quantity</th>
+        </tr>
+        @foreach (var O in ViewBag.cartItems)
+        {
+            <tr>
+                <td>@O.id</td>
+                <td>@O.name</td>
+                <td>@O.Price</td>
+                <td>@O.Quantity</td>
+            </tr>
+        }
+    </table>
+</body>
+</html>

@@ -1,0 +1,123 @@
+﻿@model IEnumerable<ProductDelivery.EF.Order>
+
+
+@Html.ActionLink("Logout", "LogoutAdmin", "User")
+
+<a href="/Category/Category"> <button class="btn bg-success"> Category </button> </a>
+<a href="/Product/Product"> <button class="btn bg-success"> Product </button> </a>
+
+<table class="table table-bordered">
+    <tr>
+        <th>Order Id</th>
+        <th>Order Status</th>
+        <th>Customer Id</th>
+        <th>Order Date</th>
+        <th>Action</th>
+    </tr>
+
+    @foreach (var order in Model)
+    {
+        <tr>
+            <td>@order.Id</td>
+            <td>@order.Status</td>
+            <td>@order.Date</td>
+            <td>@order.CustomerId</td>
+
+            <td>
+                <a href="#" class="btn btn-info view-details" data-order-id="@order.Id">View Details</a>
+
+                <a href="/Admin/Process?orderId=@order.Id" class="btn btn-success process-button" data-order-status="@order.Status">Process</a>
+            </td>
+            <td>
+                <a href="/Admin/Decline?orderId=@order.Id" class="btn btn-danger decline-button" data-order-status="@order.Status">Decline</a>
+            </td>
+        </tr>
+    }
+</table>
+
+
+<!-- Modal for displaying order -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Order Details</h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="orderDetailsContent">
+                <!-- Order details will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
+<script>
+    $(document).ready(function () {
+        $('.view-details').on('click', function (event) {
+            event.preventDefault();
+
+            var orderId = $(this).data('order-id');
+
+            $.ajax({
+                url: '/Admin/GetOrderItem?orderId=' + orderId,
+                type: 'GET',
+                success: function (data) {
+                    if (data && data !== "Order not found") {
+                        var details = "Customer Name: " + data.CustomerName + "<br>" +
+                            "Ordered Products: <ul>";
+
+                        data.OrderedProducts.forEach(function (product) {
+                            details += "<li>" + product.ProductName + " - Quantity: " + product.Quantity + "</li>";
+                        });
+
+                        details += "</ul>";
+
+                        $('#orderDetailsContent').html(details);
+                        $('#orderDetailsModal').modal('show');
+                    } else {
+                        $('#orderDetailsContent').html('Order not found.');
+                        $('#orderDetailsModal').modal('show');
+                    }
+                },
+                error: function (xhr, status, error) {
+                    console.error(error);
+                    $('#orderDetailsContent').html('Failed to fetch order details.');
+                    $('#orderDetailsModal').modal('show');
+                }
+            });
+        });
+    });
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var processButtons = document.querySelectorAll(".process-button");
+        var declineButtons = document.querySelectorAll(".decline-button");
+
+        processButtons.forEach(function (button) {
+            if (button.dataset.orderStatus === "Processing") {
+                button.classList.add("disabled");
+                button.setAttribute("disabled", "true");
+            }
+        });
+
+        declineButtons.forEach(function (button) {
+            if (button.dataset.orderStatus === "Decline") {
+                button.classList.add("disabled");
+                button.setAttribute("disabled", "true");
+            }
+        });
+    });
+</script>
+
+
+
+
+
+

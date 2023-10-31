@@ -10,6 +10,7 @@
 namespace ProductDelivery.EF
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
@@ -30,5 +31,6 @@ namespace ProductDelivery.EF
         public virtual DbSet<Product> Products { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
+        public IEnumerable<object> OrderMapTables { get; internal set; }
     }
 }

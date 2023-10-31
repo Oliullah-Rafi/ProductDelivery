@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Add your CSS styles here */
+        table.table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+            table.table th, table.table td {
+                border: 1px solid #000;
+                padding: 8px;
+                text-align: center;
+            }
+
+            table.table th {
+                background-color: #f2f2f2;
+            }
+
+        .quantity-input {
+            width: 50px;
+        }
+
+        .add-to-cart-link {
+            background-color: #007bff;
+            color: #fff;
+            padding: 5px 10px;
+            border: none;
+            cursor: pointer;
+        }
+
+            .add-to-cart-link:hover {
+                background-color: #0056b3;
+            }
+    </style>
+</head>
+<body>
+    @model IEnumerable<ProductDelivery.EF.Product>
+
+    <p>
+        @Html.ActionLink("Logout", "Logout")
+        @Html.ActionLink("View Cart", "ViewCart")
+
+
+       
+        @Html.ActionLink("ConfirmOrder", "ConfirmOrder")
+    </p>
+
+    <a href="@Url.Action("Deshboard", "User")">
+        <btn>Show Product</btn>
+    </a>
+
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Quantity)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Category.Name)
+            </th>
+            <th></th>
+        </tr>
+
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Quantity)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Category.Name)
+                </td>
+
+                @using (Html.BeginForm("AddToCart", "User", FormMethod.Post))
+                {
+                    var userInfoCookie = Request.Cookies["UserAuthentication"];
+                    string customerId = userInfoCookie?["UserId"];
+                    <td>
+                        @Html.Hidden("id", item.Id)
+                        @Html.Hidden("name", item.Name)
+                        @Html.Hidden("price", item.Price)
+                        @Html.Hidden("CategoryId", item.CategoryId)
+                        <input type="number" class="quantity-input" name="quantity" min="1" value="1">
+                        <input type="submit" class="add-to-cart-link" value="Add to Cart">
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+</body>
+</html>
