@@ -228,11 +228,15 @@ namespace ProductDelivery.Controllers
             }
 
 
-            return RedirectToAction("Index");
+            return RedirectToAction("Login");
         }
 
 
-        public ActionResult AddToCart(int id, string name, float Price, float Quantity, int CategoryId)
+
+
+       /* public ActionResult AddToCart(int id, string name, float Price, float Quantity, int CategoryId)*/
+
+            public ActionResult AddToCart(int Id, string Name, float quantity, float Price, string Status, int CustomerId, string Date)
         {
             if (Session["ProductBasket"] == null)
             {
@@ -244,12 +248,12 @@ namespace ProductDelivery.Controllers
 
 
 
-            var existingProduct = productBasket.FirstOrDefault(item => item.id == id);
+            var existingProduct = productBasket.FirstOrDefault(item => item.id == Id);
             // Checking is that same product already in the cart
             if (existingProduct != null)
             {
                 // only increses the quantity
-                existingProduct.Quantity += Quantity;
+                existingProduct.Quantity += quantity;
              
             }
             else
@@ -257,12 +261,16 @@ namespace ProductDelivery.Controllers
                 // add product in cart
                 productBasket.Add(new CartItem
                 {
-                    id = id,
-                    name = name,
-                    Price = Price,
-                    Quantity = Quantity,
-                    CategoryId = CategoryId,
+                    id = Id,
+                    name = Name,
                    
+                    Quantity = quantity,
+                    Price = Price,
+                    Status = Status,
+                    CustomerId = CustomerId,
+                    Date = DateTime.Parse(Date)
+
+
                 });
             }
 
@@ -284,8 +292,8 @@ namespace ProductDelivery.Controllers
             }
             else
             {
-               
-                ViewBag.cartItems = cartItems;
+
+                ViewBag.ProductIdsInCart = cartItems;
             }
 
             return View("ViewCart");
@@ -337,8 +345,10 @@ namespace ProductDelivery.Controllers
                                 var orderD = new Order
                                 {
                                     Status = "Ordered",
+                                 
+                                    Date = DateTime.Now,
+
                                     CustomerId = UserId,
-                                    Date = DateTime.Now
                                 };
                                 db.Orders.Add(orderD);
                                 db.SaveChanges();
@@ -347,11 +357,13 @@ namespace ProductDelivery.Controllers
                                 foreach (var product in productIdsInCart)
                                 {
                                     var orderM = new OrderDetail
-                                    {                  
-                                       Id= orderD.Id,
+                                    {
+                                        OrderID = orderD.Id,
                                         ProductId = product.id,
-                                        Quantity = product.Quantity,
-                                        Price = product.Price * product.Quantity
+                                     
+                                        Price = product.Price * product.Quantity,
+
+                                        Quantity = product.Quantity
                                     };
                                     db.OrderDetails.Add(orderM);
                                 }

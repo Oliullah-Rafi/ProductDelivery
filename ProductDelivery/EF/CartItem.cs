@@ -16,6 +16,8 @@ namespace ProductDelivery.EF
         public string Status { get; set; }
 
         public int Count { get; set; }
+
+        public int CustomerId { get; set; }
         public int CategoryId { get; set; } // Customer ID
 
         public DateTime Date { get; set; } // Date of the order

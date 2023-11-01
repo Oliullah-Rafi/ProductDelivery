@@ -42,13 +42,12 @@
         @Html.ActionLink("Logout", "Logout")
         @Html.ActionLink("View Cart", "ViewCart")
 
+        @Html.ActionLink("Confirm Order", "ConfirmOrder")
 
-       
-        @Html.ActionLink("ConfirmOrder", "ConfirmOrder")
     </p>
 
     <a href="@Url.Action("Deshboard", "User")">
-        <btn>Show Product</btn>
+        <button>Show Product</button>
     </a>
 
     <table class="table">
@@ -88,17 +87,24 @@
                 {
                     var userInfoCookie = Request.Cookies["UserAuthentication"];
                     string customerId = userInfoCookie?["UserId"];
-                    <td>
-                        @Html.Hidden("id", item.Id)
-                        @Html.Hidden("name", item.Name)
-                        @Html.Hidden("price", item.Price)
-                        @Html.Hidden("CategoryId", item.CategoryId)
-                        <input type="number" class="quantity-input" name="quantity" min="1" value="1">
-                        <input type="submit" class="add-to-cart-link" value="Add to Cart">
-                    </td>
+            <td>
+
+                @Html.Hidden("Id", item.Id)
+                @Html.Hidden("Name", item.Name)
+                @Html.Hidden("Price", item.Price)
+                @Html.Hidden("Status", "Ordered")
+                @Html.Hidden("CustomerId", customerId)
+                @Html.Hidden("Date", DateTime.Now.ToString("yyyy-MM-dd")) <!-- Set the OrderDate to today's date -->
+
+
+                <input type="number" class="quantity-input" name="quantity" min="1" value="1">
+                <input type="submit" class="add-to-cart-link" value="Add to Cart">
+            </td>
                 }
             </tr>
         }
     </table>
 </body>
 </html>
+
+
