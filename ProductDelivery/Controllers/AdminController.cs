@@ -15,7 +15,7 @@ namespace ProductDelivery.Controllers
         public ActionResult Admin()
         {
 
-            if (Request.Cookies["AdminInfo"] != null)
+            if (Request.Cookies["AdminAuthentication"] != null)
             {
                 var db = new ProductDatabaseEntities();
                 var data = db.Orders.ToList();
@@ -39,7 +39,7 @@ namespace ProductDelivery.Controllers
                     order.Status = "Processing";
 
                     // Find all products from OrderDetails accorading to order id
-                    var orderProducts = db.OrderDetails.Where(o => o.OrderID == orderId).ToList();
+                    var orderProducts = db.OrderDetails.Where(o => o.Id == orderId).ToList();
 
                     foreach (var orderDetail in orderProducts)
                     {
@@ -96,7 +96,7 @@ namespace ProductDelivery.Controllers
                 if (order != null)
                 {
                     var Customer = db.Users.FirstOrDefault(c => c.Id == order.CustomerId);
-                    var OrderDetail = db.OrderDetails.Where(om => om.OrderID == orderId).ToList();
+                    var OrderDetail = db.OrderDetails.Where(om => om.Id == orderId).ToList();
 
                     var products = OrderDetail
                         .Select(om => new
@@ -113,7 +113,7 @@ namespace ProductDelivery.Controllers
                         OrderedProducts = products
                     };
 
-                    return Json(order, JsonRequestBehavior.AllowGet);
+                    return Json(orders, JsonRequestBehavior.AllowGet);
                 }
 
                 return Json("Order not found", JsonRequestBehavior.DenyGet);

@@ -20,31 +20,33 @@
         <tr>
             <td>@order.Id</td>
             <td>@order.Status</td>
-            <td>@order.Date</td>
+
             <td>@order.CustomerId</td>
+
+            <td>@order.Date</td>
 
             <td>
                 <a href="#" class="btn btn-info view-details" data-order-id="@order.Id">View Details</a>
 
-                <a href="/Admin/Process?orderId=@order.Id" class="btn btn-success process-button" data-order-status="@order.Status">Process</a>
+                <a href="/Admin/ProcessItem?Id=@order.Id" class="btn btn-success process-button" data-order-status="@order.Status">Process</a>
             </td>
             <td>
-                <a href="/Admin/Decline?orderId=@order.Id" class="btn btn-danger decline-button" data-order-status="@order.Status">Decline</a>
+                <a href="/Admin/DeclineItem?Id=@order.Id" class="btn btn-danger decline-button" data-order-status="@order.Status">Decline</a>
             </td>
         </tr>
     }
+
+
 </table>
 
 
-<!-- Modal for displaying order -->
-<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+<!-- Modal for displaying order details -->
+<div class="modal" id="orderDetailsModal">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title">Order Details</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
             <div class="modal-body" id="orderDetailsContent">
                 <!-- Order details will be displayed here -->
@@ -52,19 +54,108 @@
         </div>
     </div>
 </div>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<script>
+    $(document).ready(function () {
+        // Handle click event for the "View Details" button
+        $('.view-details').click(function () {
+            var orderId = $(this).data('order-id');
 
+            // Make an AJAX request to the GetOrderItem action in the Admin controller
+            $.ajax({
+                url: '/Admin/GetOrderItem?orderId=' + orderId,
+                type: 'GET',
+                success: function (data) {
+                    if (data) {
+                        // Populate the order details modal with the retrieved data
+                        var modalContent = $('#orderDetailsContent');
+                        modalContent.empty();
+
+                        // You can format and display the order details here
+                        modalContent.append('<p>Customer Name: ' + data.CustomerName + '</p>');
+
+                        // Loop through ordered products and display them
+                        $.each(data.OrderedProducts, function (index, product) {
+                            modalContent.append('<p>Product Name: ' + product.ProductName + ', Quantity: ' + product.Quantity + '</p>');
+                        });
+
+                        // Show the modal
+                        $('#orderDetailsModal').modal('show');
+                    } else {
+                        alert('Order not found');
+                    }
+                },
+                error: function () {
+                    alert('Failed to fetch order details');
+                }
+            });
+        });
+    });
+</script>
 
 <script>
+    $(document).ready(function () {
+        // Handle click event for the "Process" button
+        $('.process-button').click(function () {
+            var button = $(this);
+            var orderId = button.data('order-id');
+
+            // Make an AJAX request to the ProcessItem action in the Admin controller
+            $.ajax({
+                url: '/Admin/ProcessItem?orderId=' + orderId,
+                type: 'GET',
+                success: function () {
+                    // Disable the "Process" button after it's clicked
+                    button.prop('disabled', true);
+                    button.text('Processing...');
+
+                    // You can add more logic here as needed
+                },
+                error: function () {
+                    alert('Failed to process order');
+                }
+            });
+        });
+
+        // Handle click event for the "Decline" button
+        $('.decline-button').click(function () {
+            var button = $(this);
+            var orderId = button.data('order-id');
+
+            // Make an AJAX request to the DeclineItem action in the Admin controller
+            $.ajax({
+                url: '/Admin/DeclineItem?orderId=' + orderId,
+                type: 'GET',
+                success: function () {
+                    // Disable the "Decline" button after it's clicked
+                    button.prop('disabled', true);
+                    button.text('Declined');
+
+                    // You can add more logic here as needed
+                },
+                error: function () {
+                    alert('Failed to decline order');
+                }
+            });
+        });
+    });
+
+</script>
+
+@*this script file used for view details*@
+
+<!--<script>
     $(document).ready(function () {
         $('.view-details').on('click', function (event) {
             event.preventDefault();
 
-            var orderId = $(this).data('order-id');
+            var orderId = $(this).data('Id');
 
             $.ajax({
-                url: '/Admin/GetOrderItem?orderId=' + orderId,
+                url: '/Admin/GetOrderItem?Id=' + orderId,
                 type: 'GET',
                 success: function (data) {
                     if (data && data !== "Order not found") {
@@ -72,7 +163,7 @@
                             "Ordered Products: <ul>";
 
                         data.OrderedProducts.forEach(function (product) {
-                            details += "<li>" + product.ProductName + " - Quantity: " + product.Quantity + "</li>";
+                            details += "<li>" + product.Name + " - Quantity: " + product.Quantity + "</li>";
                         });
 
                         details += "</ul>";
@@ -108,16 +199,10 @@
         });
 
         declineButtons.forEach(function (button) {
-            if (button.dataset.orderStatus === "Decline") {
+            if (button.dataset.Status === "Decline") {
                 button.classList.add("disabled");
                 button.setAttribute("disabled", "true");
             }
         });
     });
-</script>
-
-
-
-
-
-
+</script>-->

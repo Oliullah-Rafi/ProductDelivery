@@ -23,7 +23,9 @@ namespace ProductDelivery.Controllers
             try
             {
                 var db = new ProductDatabaseEntities();
-                var existingUser = db.Users.FirstOrDefault(u => u.Username == user.Username && u.Password == user.Password);
+
+
+                var existingUser = db.Users.FirstOrDefault(u => u.Username == user.Username);
 
                 if (existingUser != null && user.Password == existingUser.Password && existingUser.Type == "Customer")
                 {
@@ -32,6 +34,7 @@ namespace ProductDelivery.Controllers
 
                     // Set a cookie to remember the user's login
                     HttpCookie userCookie = new HttpCookie("UserAuthentication");
+                    userCookie["Username"] = existingUser.Username;
                     userCookie["UserId"] = existingUser.Id.ToString();
                     userCookie.Expires = DateTime.Now.AddHours(1); // Set the cookie to expire after a certain time
                     Response.Cookies.Add(userCookie);
@@ -47,17 +50,18 @@ namespace ProductDelivery.Controllers
                     Session["UserId"] = existingUser.Id; // Store user ID in session
 
                     // Set a cookie to remember the user's login
-                    HttpCookie userCookie = new HttpCookie("AdminAuthentication");
-                    userCookie["UserId"] = existingUser.Id.ToString();
-                    userCookie.Expires = DateTime.Now.AddHours(1); // Set the cookie to expire after a certain time
-                    Response.Cookies.Add(userCookie);
+                    HttpCookie adminCookie = new HttpCookie("AdminAuthentication");
+                    adminCookie["Username"] = existingUser.Username;
+                    adminCookie["UserId"] = existingUser.Id.ToString();
+                    adminCookie.Expires = DateTime.Now.AddHours(1); // Set the cookie to expire after a certain time
+                    Response.Cookies.Add(adminCookie);
 
                     /*  return RedirectToAction("Order");*/
                     return RedirectToAction("Admin", "Admin");
                 }
                 else
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid username or password");
+                    ModelState.AddModelError(/*string.Empty*/ "", "Invalid username or password");
                     return View();
                 }
             }
@@ -69,7 +73,7 @@ namespace ProductDelivery.Controllers
             }
         }
 
-   
+
         [HttpGet]
         public ActionResult SignUp()
         {
@@ -113,7 +117,7 @@ namespace ProductDelivery.Controllers
             if (Request.Cookies["AdminAuthentication"] != null)
             {
                 var adminCookie = new HttpCookie("AdminAuthentication");
-                adminCookie.Expires = DateTime.Now.AddYears(-1); // logout
+                adminCookie.Expires = DateTime.Now.AddDays(-1); // logout
                 Response.Cookies.Add(adminCookie);
             }
 
@@ -121,10 +125,7 @@ namespace ProductDelivery.Controllers
             return RedirectToAction("Login");
         }
 
- 
 
-
-        [HttpPost]
         public ActionResult LogoutUser()
         {
             // Clear the session
@@ -133,7 +134,11 @@ namespace ProductDelivery.Controllers
             // Clear the user authentication cookie
             if (Request.Cookies["UserAuthentication"] != null)
             {
-                Response.Cookies["UserAuthentication"].Expires = DateTime.Now.AddDays(-1);
+                /*Response.Cookies["UserAuthentication"].Expires = DateTime.Now.AddDays(-1);*/
+
+                var userCookie = new HttpCookie("UserAuthentication");
+                userCookie.Expires = DateTime.Now.AddDays(-1);
+                Response.Cookies.Add(userCookie);
             }
 
             return RedirectToAction("User");
@@ -219,7 +224,7 @@ namespace ProductDelivery.Controllers
         {
             if (Request.Cookies["UserAuthentication"] != null)
             {
-                string UserUserName = Request.Cookies["UserAuthentication"]["UserUserName"];
+                string UserUserName = Request.Cookies["UserAuthentication"]["Username"];
 
                 var db = new ProductDatabaseEntities();
                 var data = db.Products.ToList();

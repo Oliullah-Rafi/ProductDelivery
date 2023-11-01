@@ -19,7 +19,8 @@ namespace ProductDelivery.EF
         {
             this.OrderDetails = new HashSet<OrderDetail>();
         }
-    
+
+        public static int Quantity { get; internal set; }
         public int Id { get; set; }
         public string Status { get; set; }
         public System.DateTime Date { get; set; }
